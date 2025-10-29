@@ -21,8 +21,9 @@ import Link from "next/link";
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { da } from "zod/locales";
+import {useRouter} from "next/navigation";
+import {FaGoogle, FaGithub} from "react-icons/fa";
+
 
 const formSchema = z.object({
   name:z.string().min(1,{message:"Name is required"}),
@@ -37,7 +38,8 @@ path:["confirmPassword"]
 
 
 const SignUpView = () => {
-  const router = useRouter()
+    const router = useRouter();
+
   const[error, setError] = useState<string | null>(null)
   const[pending, setPending]= useState(false)
 
@@ -61,11 +63,12 @@ const SignUpView = () => {
         name:data.name,
         email:data.email,
         password:data.password,
+          callbackURL:'/'
       },
       {
         onSuccess:()=>{
           setPending(false)
-          router.push('/')
+            router.push("/")
         },
         onError:({error})=> {
           setPending(false)
@@ -189,12 +192,30 @@ const SignUpView = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" type="button" className="w-full" disabled={pending}>
-                    Google
+                  <Button variant="outline" type="button" className="w-full cursor-pointer" disabled={pending}
+                          onClick={()=> {
+                              authClient.signIn.social({
+                                  provider:"google",
+                                  callbackURL:'/'
+                              })
+                          }}
+                  >
+                    <FaGoogle/>
                   </Button>
 
-                  <Button variant="outline" type="button" className="w-full" disabled={pending}>
-                    Github
+                  <Button
+                      variant="outline"
+                      type="button"
+                      className="w-full cursor-pointer"
+                      disabled={pending}
+                      onClick={()=> {
+                          authClient.signIn.social({
+                              provider:"github",
+                              callbackURL:'/'
+                          })
+                      }}
+                  >
+                    <FaGithub/>
                   </Button>
                 </div>
                 <div className="text-center text-sm">
